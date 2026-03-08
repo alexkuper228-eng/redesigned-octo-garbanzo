@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DonationAlerts Treadmill Widget</title>
+<style>
+:root{--bg:#0e0e10;--panel:#18181b;--line:#2a2a2e;--text:#efeff1;--muted:#a0a0aa;--accent:#f4a234;--accent2:#e05c0a;--purple:#9147ff;--green:#3fbf72;--red:#d64848}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);padding:20px}.app{max-width:580px;margin:0 auto;display:flex;flex-direction:column;gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.header{background:linear-gradient(135deg,var(--accent),var(--accent2));text-align:center}.title{font-size:24px;font-weight:900}.subtitle{font-size:13px;opacity:.88;margin-top:4px}.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.22);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;margin-top:10px}.dot{width:8px;height:8px;border-radius:50%;background:#666}.dot.ok{background:var(--green)}.dot.wait{background:var(--accent)}.dot.err{background:var(--red)}
+.section{font-size:14px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}.muted{font-size:13px;line-height:1.55;color:var(--muted)}label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px;text-transform:uppercase}.input{width:100%;background:#0e0e10;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;outline:none}.input:focus{border-color:var(--accent)}.row{display:flex;gap:10px;flex-wrap:wrap}.col{flex:1 1 220px}.btn,.auth-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border:none;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;transition:.15s opacity,.15s transform}.btn:active,.auth-link:active{transform:scale(.985)}.btn:hover,.auth-link:hover{opacity:.93}.main{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}.sub{background:#2b2b31;color:var(--text)}.purple{background:var(--purple);color:#fff}.green{background:var(--green);color:#fff}.danger{background:#3a1717;color:#ff9a9a;border:1px solid #5a2626}.disabled{opacity:.4 !important;pointer-events:none}.box{background:#101014;border:1px dashed #4a4a52;border-radius:10px;padding:10px 12px;word-break:break-all;font-size:12px;color:var(--muted);line-height:1.55}.okbox{background:#101912;border:1px solid #235b37;color:#7ce0a1;border-radius:10px;padding:10px 12px;font-size:12px}.warnbox{background:#1a1410;border:1px solid #5a4020;color:#ffcf86;border-radius:10px;padding:10px 12px;font-size:12px}.hidden{display:none !important}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.status-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800}.timer{text-align:center;position:relative;overflow:hidden}.timer.run{border-color:var(--accent);box-shadow:0 0 22px rgba(244,162,52,.15)}.timer.pause{border-color:#ff9147;box-shadow:0 0 22px rgba(255,145,71,.12)}.timer-state{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.timer-state.run{color:var(--accent)}.timer-state.pause{color:#ff9147}.time{font-size:82px;font-weight:900;line-height:1;letter-spacing:-2px;margin-top:8px;font-variant-numeric:tabular-nums}.time.idle{color:#3f3f49}.time.run{color:#fff}.time.pause{color:#ff9147}.time.warn{color:#ff6b35}.progress{position:absolute;left:0;bottom:0;height:3px;width:0%;background:linear-gradient(90deg,var(--accent),#ffd089)}.progress.pause{background:linear-gradient(90deg,#ff9147,#ffbf47)}.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#111114;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}.statv{font-size:21px;font-weight:900;color:var(--accent)}.statl{font-size:11px;font-weight:800;color:#6f6f7a;margin-top:4px;text-transform:uppercase}.feed{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto}.item{display:flex;justify-content:space-between;align-items:center;background:#101014;border-radius:10px;padding:10px 12px;border-left:3px solid var(--accent)}.item.manual{border-left-color:var(--purple)}.name{font-size:14px;font-weight:900}.meta,.itime{font-size:11px;color:#6f6f7a;margin-top:3px}.amt{font-size:14px;font-weight:900;color:var(--accent)}.empty{text-align:center;color:#666;padding:20px}.amountwrap{position:relative}.rub{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#777;font-weight:900}.amountwrap .input{padding-right:28px}.quick{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}.q{background:#2a2a30;border:1px solid #383842;color:var(--text);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:900;cursor:pointer}.preview{display:flex;justify-content:space-between;gap:10px;background:#101014;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--muted);margin-bottom:12px}.preview b{font-size:15px;color:var(--accent)}.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);transition:transform .3s ease;background:var(--accent);color:#111;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:900;z-index:999}.toast.show{transform:translateX(-50%) translateY(0)}.toast.green{background:var(--green);color:#fff}.toast.red{background:var(--red);color:#fff}.toast.purple{background:var(--purple);color:#fff}@media(max-width:560px){.stats{grid-template-columns:1fr}.time{font-size:62px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="card header">
+    <div class="title">🏃 Беговая дорожка</div>
+    <div class="subtitle">sam_tvstream — DonationAlerts → время на дорожке</div>
+    <div class="badge"><span class="dot" id="daDot"></span><span id="daBadge">DA: не подключён</span></div>
+  </div>
+
+  <div class="card">
+    <div class="section">Подключение</div>
+    <div class="muted">Это новая версия с прямой ссылкой авторизации. Кнопка не зависит от скрытых обработчиков: как только ты вводишь Client ID, ссылка OAuth создаётся сразу и её можно открыть вручную.</div>
+    <div style="height:12px"></div>
+    <label>Client ID DonationAlerts</label>
+    <input class="input" id="clientId" placeholder="Вставь Client ID сюда" oninput="updateAuthLink()">
+    <div style="height:12px"></div>
+    <label>Redirect URI для DonationAlerts</label>
+    <div class="box" id="redirectBox"></div>
+    <div style="height:12px"></div>
+    <label>OAuth ссылка</label>
+    <div class="box" id="authUrlBox">Сначала введи Client ID</div>
+    <div class="row" style="margin-top:12px">
+      <a id="authLink" class="auth-link main disabled" href="#">🔑 Авторизация через DonationAlerts</a>
+      <button class="btn sub" onclick="copyRedirect()">📋 Копировать Redirect URI</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sub" onclick="copyAuthUrl()">📋 Копировать OAuth ссылку</button>
+      <button class="btn danger" onclick="logoutDA()">🗑️ Сбросить токен</button>
+    </div>
+    <div style="height:12px"></div>
+    <div class="warnbox" id="fileWarn">Если ты открыл файл локально как file://, авторизация не будет работать. Нужно открывать именно GitHub Pages URL.</div>
+    <div id="tokenOk" class="okbox hidden" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card status">
+    <div class="status-left"><span class="dot" id="statusDot"></span><span id="statusText">Ожидание подключения</span></div>
+    <div style="font-size:12px;color:#a0a0aa" id="statusSub">1 минута = 60 ₽</div>
+  </div>
+
+  <div class="card timer" id="timerCard">
+    <div class="timer-state" id="timerState">⏸ Ожидание доната</div>
+    <div class="time idle" id="timerDisplay">00:00</div>
+    <div style="font-size:13px;color:#6f6f7a;margin-top:8px">осталось времени на дорожке</div>
+    <div class="controls">
+      <button class="btn main" id="pauseBtn" onclick="pauseTimer()" disabled>⏸ Пауза</button>
+      <button class="btn green hidden" id="resumeBtn" onclick="resumeTimer()">▶ Продолжить</button>
+      <button class="btn sub" onclick="resetTimer()">🔄 Сброс</button>
+      <button class="btn purple" onclick="manualMode()">✏️ Ручной режим</button>
+    </div>
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="statv" id="statTotal">0 ₽</div><div class="statl">Собрано</div></div>
+    <div class="stat"><div class="statv" id="statMins">0 мин</div><div class="statl">Добавлено</div></div>
+    <div class="stat"><div class="statv" id="statCnt">0</div><div class="statl">Донатов</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section">📡 Лента донатов</div>
+    <div class="feed" id="feed"><div class="empty">Ждём первый донат</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section">✏️ Ручное добавление</div>
+    <div class="row">
+      <div class="col"><label>Имя</label><input class="input" id="manualName" placeholder="Аноним"></div>
+      <div class="col amountwrap"><label>Сумма</label><input class="input" id="manualAmount" type="number" min="1" placeholder="Любая сумма" oninput="updatePreview()"><span class="rub">₽</span></div>
+    </div>
+    <div class="quick"><button class="q" onclick="setQuick(60)">60 ₽</button><button class="q" onclick="setQuick(120)">120 ₽</button><button class="q" onclick="setQuick(300)">300 ₽</button><button class="q" onclick="setQuick(600)">600 ₽</button><button class="q" onclick="setQuick(1000)">1000 ₽</button></div>
+    <div class="preview"><span id="previewLabel">Введи сумму выше</span><b id="previewTime">—</b></div>
+    <button class="btn purple" style="width:100%" onclick="addManual()">+ Добавить время</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const RATE=60;
+const STORAGE_TOKEN='treadmill_da_token_v2';
+const STORAGE_CLIENT='treadmill_da_client_v2';
+const STORAGE_STATE='treadmill_da_state_v2';
+let timerInterval=null,isPaused=false,remainingSeconds=0,totalSeconds=0,totalRaised=0,totalMinutesAdded=0,donateCount=0,feed=[],accessToken='',userId=null,userName='',ws=null,pingInterval=null,manual=false,connecting=false,connected=false;
+function el(id){return document.getElementById(id)}
+function init(){
+  const redirect=location.origin+location.pathname;
+  el('redirectBox').textContent=redirect;
+  el('fileWarn').classList.toggle('hidden',location.protocol!=='file:');
+  const savedClient=localStorage.getItem(STORAGE_CLIENT)||'';
+  el('clientId').value=savedClient;
+  updateAuthLink();
+  readOAuthReturn();
+  updateStats();
+  updateDisplay();
+  renderFeed();
+  checkSavedToken();
+}
+function updateAuthLink(){
+  const clientId=el('clientId').value.trim();
+  localStorage.setItem(STORAGE_CLIENT,clientId);
+  const redirect=location.origin+location.pathname;
+  const state=Math.random().toString(36).slice(2);
+  localStorage.setItem(STORAGE_STATE,state);
+  if(!clientId||location.protocol==='file:'){
+    el('authUrlBox').textContent=location.protocol==='file:'?'Нужно открыть GitHub Pages URL, а не file://':'Сначала введи Client ID';
+    el('authLink').href='#';
+    el('authLink').classList.add('disabled');
+    return;
+  }
+  const scope='oauth-user-show oauth-donation-subscribe oauth-donation-index';
+  const url='https://www.donationalerts.com/oauth/authorize?client_id='+encodeURIComponent(clientId)+'&redirect_uri='+encodeURIComponent(redirect)+'&response_type=token&scope='+encodeURIComponent(scope)+'&state='+encodeURIComponent(state);
+  el('authUrlBox').textContent=url;
+  el('authLink').href=url;
+  el('authLink').classList.remove('disabled');
+}
+function copyRedirect(){navigator.clipboard.writeText(el('redirectBox').textContent).then(()=>toast('Redirect URI скопирован','green')).catch(()=>toast('Не удалось скопировать','red'))}
+function copyAuthUrl(){const txt=el('authUrlBox').textContent;if(!txt||txt.includes('Сначала')||txt.includes('Нужно открыть')){toast('OAuth ссылка ещё не готова','red');return}navigator.clipboard.writeText(txt).then(()=>toast('OAuth ссылка скопирована','green')).catch(()=>toast('Не удалось скопировать','red'))}
+function readOAuthReturn(){
+  if(!location.hash)return;
+  const params=new URLSearchParams(location.hash.slice(1));
+  const token=params.get('access_token');
+  const state=params.get('state');
+  const savedState=localStorage.getItem(STORAGE_STATE);
+  if(token&&(!savedState||state===savedState)){
+    accessToken=token;
+    localStorage.setItem(STORAGE_TOKEN,token);
+    el('tokenOk').textContent='Токен получен. Адрес очищен автоматически. Подключаемся...';
+    el('tokenOk').classList.remove('hidden');
+    history.replaceState({},document.title,location.pathname+location.search);
+    connectDA();
+  }
+}
+function checkSavedToken(){const t=localStorage.getItem(STORAGE_TOKEN);if(t){el('tokenOk').textContent='Найден сохранённый токен. Если нужно, просто нажми кнопку авторизации снова или дождись автоподключения после возврата.';el('tokenOk').classList.remove('hidden')}}
+function logoutDA(){if(ws)try{ws.close()}catch(e){} if(pingInterval)clearInterval(pingInterval); localStorage.removeItem(STORAGE_TOKEN); accessToken=''; connected=false; connecting=false; userId=null; userName=''; el('daDot').className='dot'; el('daBadge').textContent='DA: не подключён'; setStatus('off','Токен удалён','Нужно пройти авторизацию заново'); toast('Токен удалён','purple')}
+function manualMode(){manual=true;setStatus('manual','Ручной режим','DonationAlerts не подключён');toast('Ручной режим включён','purple')}
+async function connectDA(){
+  if(connecting)return;
+  if(!accessToken)accessToken=localStorage.getItem(STORAGE_TOKEN)||'';
+  if(!accessToken){toast('Нет токена. Сначала авторизуйся','red');return}
+  connecting=true;
+  manual=false;
+  setStatus('wait','Подключение к DonationAlerts...','Проверяем токен и подписываемся на донаты');
+  try{
+    const meRes=await fetch('https://www.donationalerts.com/api/v1/user/oauth',{headers:{'Authorization':'Bearer '+accessToken}});
+    if(!meRes.ok)throw new Error('Ошибка авторизации '+meRes.status);
+    const me=await meRes.json();
+    userId=me.data.id;
+    userName=me.data.name||'streamer';
+    el('daDot').className='dot wait';
+    el('daBadge').textContent='DA: '+userName;
+    await connectCentrifugo(me.data.socket_connection_token);
+  }catch(err){
+    connecting=false;
+    connected=false;
+    setStatus('err','Не удалось подключиться',String(err.message||err));
+    toast('Ошибка подключения: '+String(err.message||err),'red');
+  }
+}
+async function connectCentrifugo(socketToken){
+  return new Promise((resolve,reject)=>{
+    ws=new WebSocket('wss://centrifugo.donationalerts.com/connection/websocket');
+    ws.onopen=()=>{ws.send(JSON.stringify({params:{token:socketToken},id:1}))};
+    ws.onmessage=async(evt)=>{
+      let msg; try{msg=JSON.parse(evt.data)}catch(e){return}
+      if(msg.id===1&&msg.result&&msg.result.client){
+        try{
+          const subRes=await fetch('https://www.donationalerts.com/api/v1/centrifuge/subscribe',{
+            method:'POST',
+            headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},
+            body:JSON.stringify({channels:[`$alerts:donation_${userId}`],client:msg.result.client})
+          });
+          if(!subRes.ok)throw new Error('Ошибка подписки '+subRes.status);
+          const sub=await subRes.json();
+          ws.send(JSON.stringify({params:{channel:`$alerts:donation_${userId}`,token:sub.channels[0].token},method:1,id:2}));
+        }catch(e){reject(e)}
+      }
+      if(msg.id===2&&msg.result){
+        connecting=false;
+        connected=true;
+        setStatus('ok','DonationAlerts подключён',userName);
+        el('daDot').className='dot ok';
+        el('daBadge').textContent='DA: '+userName;
+        toast('DonationAlerts подключён','green');
+        if(pingInterval)clearInterval(pingInterval);
+        pingInterval=setInterval(()=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({id:99}))},25000);
+        resolve();
+      }
+      if(!msg.id&&msg.result&&msg.result.data&&msg.result.data.data){handleDonation(msg.result.data.data)}
+    };
+    ws.onerror=()=>reject(new Error('WebSocket error'));
+    ws.onclose=()=>{if(connected){connected=false;setStatus('err','Соединение потеряно','Пробуем переподключиться...');setTimeout(()=>{if(!manual&&(localStorage.getItem(STORAGE_TOKEN)||accessToken))connectDA()},5000)}};
+  })
+}
+function setStatus(kind,text,sub){const dot=el('statusDot');dot.className='dot '+({ok:'ok',wait:'wait',err:'err',manual:'',off:''}[kind]||'');el('statusText').textContent=text;el('statusSub').textContent=sub||'1 минута = 60 ₽'}
+function handleDonation(d){const name=d.username||'Аноним';const amount=parseFloat(d.amount)||0;const currency=d.currency||'RUB';const rub=currency==='RUB'?amount:0;const sec=Math.floor(rub/RATE*60);if(sec>0){remainingSeconds+=sec;totalSeconds+=sec;totalMinutesAdded+=sec/60;if(!isPaused)startTimer();else updateDisplay()}totalRaised+=rub;donateCount+=1;updateStats();const t=formatAdd(sec)||'(не RUB)';addFeed(name,amount+' '+currency,t,false);toast(name+': '+amount+' '+currency+' → '+t,'green')}
+function setQuick(v){el('manualAmount').value=v;updatePreview()}
+function updatePreview(){const amount=parseFloat(el('manualAmount').value)||0;if(amount<=0){el('previewLabel').textContent='Введи сумму выше';el('previewTime').textContent='—';return}const sec=Math.floor(amount/RATE*60);el('previewLabel').textContent=sec<60?('+'+sec+' сек (до минуты ещё '+(RATE-(amount%RATE)).toFixed(0)+' ₽)'):'Добавится:';el('previewTime').textContent=formatAdd(sec)}
+function addManual(){const name=(el('manualName').value||'').trim()||'Аноним';const amount=parseFloat(el('manualAmount').value);if(!amount||amount<=0){toast('Введи сумму','red');return}const sec=Math.floor(amount/RATE*60);if(sec<=0){toast('Слишком мало','red');return}remainingSeconds+=sec;totalSeconds+=sec;totalRaised+=amount;totalMinutesAdded+=sec/60;donateCount+=1;updateStats();if(!isPaused)startTimer();else updateDisplay();const t=formatAdd(sec);addFeed(name,amount+' ₽',t,true);el('manualName').value='';el('manualAmount').value='';updatePreview();toast(name+': '+t,'purple')}
+function formatAdd(sec){if(!sec)return'';const m=Math.floor(sec/60),s=sec%60;return m>0?('+'+m+' мин'+(s?' '+s+' сек':'')):('+'+s+' сек')}
+function addFeed(name,amount,timeStr,manualItem){const now=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});feed.unshift({name,amount,timeStr,now,manualItem});renderFeed()}
+function renderFeed(){const f=el('feed');if(!feed.length){f.innerHTML='<div class="empty">Ждём первый донат</div>';return}f.innerHTML=feed.slice(0,15).map(d=>'<div class="item'+(d.manualItem?' manual':'')+'"><div><div class="name">'+(d.manualItem?'✏️ ':'💜 ')+safe(d.name)+'</div><div class="meta">'+d.now+(d.manualItem?' · вручную':' · DA')+'</div></div><div style="text-align:right"><div class="amt">'+safe(d.amount)+'</div><div class="itime">'+safe(d.timeStr)+'</div></div></div>').join('')}
+function updateStats(){el('statTotal').textContent=totalRaised.toLocaleString('ru-RU')+' ₽';const m=Math.floor(totalMinutesAdded),s=Math.floor((totalMinutesAdded%1)*60);el('statMins').textContent=m+' мин'+(s?' '+s+' с':'');el('statCnt').textContent=donateCount}
+function startTimer(){if(timerInterval||remainingSeconds<=0)return;timerInterval=setInterval(tick,1000);setTimerState('run')}
+function tick(){if(remainingSeconds<=0){remainingSeconds=0;clearInterval(timerInterval);timerInterval=null;isPaused=false;setTimerState('idle');updateDisplay();return}remainingSeconds-=1;updateDisplay()}
+function pauseTimer(){if(!timerInterval)return;clearInterval(timerInterval);timerInterval=null;isPaused=true;setTimerState('pause');toast('Таймер на паузе')}
+function resumeTimer(){if(!isPaused||remainingSeconds<=0)return;isPaused=false;timerInterval=setInterval(tick,1000);setTimerState('run');toast('Таймер продолжен','green')}
+function resetTimer(){clearInterval(timerInterval);timerInterval=null;isPaused=false;remainingSeconds=0;totalSeconds=0;setTimerState('idle');updateDisplay()}
+function setTimerState(state){const card=el('timerCard'),txt=el('timerState'),pause=el('pauseBtn'),resume=el('resumeBtn'),prog=el('progress');card.className='card timer '+(state==='idle'?'':state);prog.className='progress'+(state==='pause'?' pause':'');txt.className='timer-state '+(state==='idle'?'':state);if(state==='run'){txt.textContent='🏃 Стример бежит';pause.disabled=false;pause.classList.remove('hidden');resume.classList.add('hidden')}else if(state==='pause'){txt.textContent='⏸ Пауза';pause.classList.add('hidden');resume.classList.remove('hidden')}else{txt.textContent='⏸ Ожидание доната';pause.disabled=true;pause.classList.remove('hidden');resume.classList.add('hidden')}}
+function updateDisplay(){const m=String(Math.floor(remainingSeconds/60)).padStart(2,'0');const s=String(remainingSeconds%60).padStart(2,'0');const d=el('timerDisplay');d.textContent=m+':'+s;d.className='time '+(isPaused?'pause':remainingSeconds>0&&remainingSeconds<=10?'warn':remainingSeconds>0?'run':'idle');el('progress').style.width=(totalSeconds>0?(remainingSeconds/totalSeconds)*100:0)+'%'}
+function toast(msg,cls){const t=el('toast');t.textContent=msg;t.className='toast'+(cls?' '+cls:'');t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),3000)}
+function safe(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+init();
+</script>
+</body>
+</html>
